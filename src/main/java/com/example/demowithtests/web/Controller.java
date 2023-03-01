@@ -135,4 +135,21 @@ public class Controller {
     public Optional<String> getAllUsersSo() {
         return employeeService.findEmails();
     }
+
+    @GetMapping("/users/countryBy")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> getByCountry(@RequestParam(required = true) String country){
+        return employeeService.filterByCountry(country);
+    }
+    @GetMapping("/users/countryByAddresses")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> getByAddressesCity(@RequestParam( required = true) String city){
+        return employeeService.filterByAddressesCity(city);
+    }
+    @GetMapping("/users/countryAndCityBy")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> getByCountryAndCity(@RequestParam( required = true) String country
+            , @RequestParam( required = true ) String street){
+        return employeeService.filterByCountryAndStreet(country,street);
+    }
 }

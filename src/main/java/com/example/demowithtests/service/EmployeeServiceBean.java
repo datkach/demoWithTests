@@ -150,4 +150,19 @@ public class EmployeeServiceBean implements EmployeeService {
                 .orElse("error?");
         return Optional.ofNullable(opt);
     }
+
+    @Override
+    public List<Employee> filterByCountry(String country) {
+        return employeeRepository.findByCountry(country);
+    }
+
+    @Override
+    public List<Employee> filterByAddressesCity(String city) {
+        return employeeRepository.findEmployeeByAddressesCity(city);
+    }
+
+    @Override
+    public List<Employee> filterByCountryAndStreet(String country, String street) {
+        return employeeRepository.findByCountryAndStreet(country,street);
+    }
 }

@@ -49,5 +49,8 @@ public interface EmployeeService {
     List<String> getSortCountry();
 
     Optional<String> findEmails();
+     List<Employee> filterByCountry(String country);
+     List<Employee> filterByAddressesCity(String city);
+     List<Employee> filterByCountryAndStreet(String country, String street);
 
 }
