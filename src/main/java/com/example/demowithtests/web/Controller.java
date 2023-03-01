@@ -146,10 +146,9 @@ public class Controller {
     public List<Employee> getByAddressesCity(@RequestParam( required = true) String city){
         return employeeService.filterByAddressesCity(city);
     }
-    @GetMapping("/users/countryAndCityBy")
+    @GetMapping("/users/activeAddressByCountry")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getByCountryAndCity(@RequestParam( required = true) String country
-            , @RequestParam( required = true ) String street){
-        return employeeService.filterByCountryAndStreet(country,street);
+    public List<Employee> getActiveAddressByCountry(@RequestParam(required = true) String country){
+        return employeeService.filterByActiveAndByCountry(country);
     }
 }

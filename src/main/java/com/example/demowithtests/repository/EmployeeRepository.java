@@ -27,7 +27,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
 
     @Query(value = " SELECT * from users join addresses a on users.id = a.employee_id where a.city=?1", nativeQuery = true)
     List<Employee> findEmployeeByAddressesCity(String city);
-    @Query(value ="SELECT * from users join addresses a on users.id = a.employee_id where a.country=:country  and  a.street=:street"
-            ,nativeQuery = true)
-    List<Employee> findByCountryAndStreet(String country, String street);
+
+    //@Query("select e from Employee e join e.addresses s where s.addressHasActive= true and s.city is not null")
+    @Query("select e from Employee e join e.addresses s where s.addressHasActive= true and s.country =?1")
+    List<Employee> findEmployeeAddressesHasActiveAndByCountry(String country);
 }

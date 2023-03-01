@@ -162,7 +162,9 @@ public class EmployeeServiceBean implements EmployeeService {
     }
 
     @Override
-    public List<Employee> filterByCountryAndStreet(String country, String street) {
-        return employeeRepository.findByCountryAndStreet(country,street);
+    public List<Employee> filterByActiveAndByCountry(String country) {
+        return employeeRepository.findEmployeeAddressesHasActiveAndByCountry(country);
     }
+
+
 }
