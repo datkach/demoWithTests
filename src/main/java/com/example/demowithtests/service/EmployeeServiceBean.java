@@ -3,6 +3,7 @@ package com.example.demowithtests.service;
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.util.exception.ResourceNotFoundException;
+import com.example.demowithtests.util.exception.ResourcePrivateException;
 import com.example.demowithtests.util.exception.ResourceWasDeletedException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +34,11 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public List<Employee> getAll() {
+      /*  var employees = employeeRepository.findAll();
+        for(Employee employee : employees){
+            if(employee.getPrivate())
+                employees.remove(employee);
+        }*/
         return employeeRepository.findAll();
     }
 
@@ -46,13 +52,30 @@ public class EmployeeServiceBean implements EmployeeService {
 
     @Override
     public Employee getById(Integer id) {
+        log.info("getById(Integer id) Service - start: id = {}", id);
         var employee = employeeRepository.findById(id)
                 // .orElseThrow(() -> new EntityNotFoundException("Employee not found with id = " + id));
                 .orElseThrow(ResourceNotFoundException::new);
+        getPrivateMethod(employee);
+
+        if(employee.getPrivate()==true){
+                throw new ResourcePrivateException();
+        }
+        log.info("getById(Integer id) Service - end:   = employee {}", employee);
          /*if (employee.getIsDeleted()) {
             throw new EntityNotFoundException("Employee was deleted with id = " + id);
         }*/
         return employee;
+    }
+    private void getPrivateMethod(Employee employee) {
+        log.info("getPrivateById() Service - start: id = {}", employee.getId());
+        if(employee.getPrivate() == null)
+        {
+            employee.setPrivate(false);
+            employeeRepository.save(employee);
+        }
+        log.info("getPrivateById() Service - end: IsPrivate = {}", employee.getPrivate());
+
     }
 
     @Override
@@ -166,5 +189,13 @@ public class EmployeeServiceBean implements EmployeeService {
         return employeeRepository.findEmployeeAddressesHasActiveAndByCountry(country);
     }
 
-
+    @Override
+    public List<Employee> getPrivateIsNullAndChange() {
+        var employees = employeeRepository.queryEmployeeByIsPrivateIsNull();
+        for(Employee employee : employees){
+            employee.setPrivate(Boolean.FALSE);
+        }
+        employeeRepository.saveAll(employees);
+        return employeeRepository.queryEmployeeByIsPrivateIsNull();
+    }
 }

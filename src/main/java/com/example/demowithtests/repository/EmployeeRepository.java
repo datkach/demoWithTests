@@ -31,4 +31,5 @@ public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
     //@Query("select e from Employee e join e.addresses s where s.addressHasActive= true and s.city is not null")
     @Query("select e from Employee e join e.addresses s where s.addressHasActive= true and s.country =?1")
     List<Employee> findEmployeeAddressesHasActiveAndByCountry(String country);
+    List<Employee> queryEmployeeByIsPrivateIsNull();
 }

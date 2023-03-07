@@ -27,6 +27,7 @@ public class Employee {
 
     @Enumerated(EnumType.STRING)
     private Gender gender;
+    private Boolean isPrivate = Boolean.FALSE;
 
     public Integer getId() {
         return id;
@@ -74,5 +75,14 @@ public class Employee {
 
     public void setGender(Gender gender) {
         this.gender = gender;
+    }
+
+
+    public Boolean getPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(Boolean aPrivate) {
+        isPrivate = aPrivate;
     }
 }

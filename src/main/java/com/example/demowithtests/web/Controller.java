@@ -151,4 +151,9 @@ public class Controller {
     public List<Employee> getActiveAddressByCountry(@RequestParam(required = true) String country){
         return employeeService.filterByActiveAndByCountry(country);
     }
+    @GetMapping("/users/privateNull")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Employee> getByPrivateIsNull(){
+        return employeeService.getPrivateIsNullAndChange();
+    }
 }
