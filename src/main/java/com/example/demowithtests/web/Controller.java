@@ -168,7 +168,7 @@ public class Controller {
     public void updateAllEmployeesPatch(){
 employeeService.updateAllEmployee();
     }
-    //Обновление всех методом Post с замером скорости
+    //Обновление всех методом Put с замером скорости
 
     @PutMapping("/users/updateAll")
     @ResponseStatus(HttpStatus.OK)
