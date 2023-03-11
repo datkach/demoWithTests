@@ -156,4 +156,23 @@ public class Controller {
     public List<Employee> getByPrivateIsNull(){
         return employeeService.getPrivateIsNullAndChange();
     }
+    //Сохранение в БД 1000 сущностей Employee
+    @PatchMapping("/users/thousand")
+    @ResponseStatus(HttpStatus.OK)
+    public void createThousandEmployee(){
+        employeeService.createThousandPeople();
+    }
+    //Обновление всех методом Patch с замером скорости
+    @PatchMapping("/users/updateAll")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateAllEmployeesPatch(){
+employeeService.updateAllEmployee();
+    }
+    //Обновление всех методом Post с замером скорости
+
+    @PostMapping("/users/updateAll")
+    @ResponseStatus(HttpStatus.OK)
+    public void updateAllEmployeesPost(){
+        employeeService.updateAllEmployee();
+    }
 }

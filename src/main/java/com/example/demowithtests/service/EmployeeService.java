@@ -53,5 +53,7 @@ public interface EmployeeService {
      List<Employee> filterByAddressesCity(String city);
     List<Employee> filterByActiveAndByCountry(String country);
     List<Employee> getPrivateIsNullAndChange();
+    void createThousandPeople();
+    void updateAllEmployee();
 
 }

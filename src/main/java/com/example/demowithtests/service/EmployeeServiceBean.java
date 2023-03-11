@@ -1,6 +1,7 @@
 package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.util.exception.ResourceNotFoundException;
 import com.example.demowithtests.util.exception.ResourcePrivateException;
@@ -197,5 +198,41 @@ public class EmployeeServiceBean implements EmployeeService {
         }
         employeeRepository.saveAll(employees);
         return employeeRepository.queryEmployeeByIsPrivateIsNull();
+    }
+//Создание 1к сущностей Employee
+    @Override
+    public void createThousandPeople() {
+        Employee employee;
+        List<Employee> employees = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            employee = new Employee();
+            if(i%2==0){
+            employee.setName("Dmytro");
+            employee.setGender(Gender.M);
+            employee.setCountry("Ukraine");
+            employee.setEmail("dmytro" + i + "@gmail.com");
+            employee.setPrivate(Boolean.FALSE);
+        }else{
+                employee.setName("Kris");
+                employee.setCountry("Spain");
+                employee.setEmail("kris" + i + "@gmail.com");
+                employee.setGender(Gender.F);
+                employee.setPrivate(Boolean.FALSE);
+            }
+            employees.add(employee);
+        }
+        employeeRepository.saveAll(employees);
+    }
+    //Обновление сущностей Employee
+    @Override
+    public void updateAllEmployee() {
+        Long currentTime = System.currentTimeMillis();
+        List<Employee> employees = employeeRepository.findAll();
+        for(Employee employee : employees){
+            employee.setName(employee.getName() + " update");
+        }
+        employeeRepository.saveAll(employees);
+        Long difference = System.currentTimeMillis() - currentTime;
+        log.info("updateAllEmployee() time method - {} ",difference);
     }
 }
