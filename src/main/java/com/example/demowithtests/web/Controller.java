@@ -170,7 +170,7 @@ employeeService.updateAllEmployee();
     }
     //Обновление всех методом Post с замером скорости
 
-    @PostMapping("/users/updateAll")
+    @PutMapping("/users/updateAll")
     @ResponseStatus(HttpStatus.OK)
     public void updateAllEmployeesPost(){
         employeeService.updateAllEmployee();
