@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -53,17 +54,16 @@ public class Controller {
     //Получение списка юзеров
     @GetMapping("/users")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getAllUsers() {
-        return employeeService.getAll();
-    }
+    public List<EmployeeReadDto> getAllUsers() {
+        return EmployeesMapper.INSTANCE.toListReadDto(employeeService.getAll());    }
 
     @GetMapping("/users/p")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Employee> getPage(@RequestParam(defaultValue = "0") int page,
+    public Page<EmployeeReadDto> getPage(@RequestParam(defaultValue = "0") int page,
                                   @RequestParam(defaultValue = "5") int size
     ) {
         Pageable paging = PageRequest.of(page, size);
-        return employeeService.getAllWithPagination(paging);
+        return employeeService.getAllWithPagination(paging).map(employee -> employeesMapper.INSTANCE.toReadDto(employee));
     }
 
     //Получения юзера по id
@@ -87,10 +87,10 @@ public class Controller {
     //Обновление юзера
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Employee refreshEmployee(@PathVariable("id") Integer id, @RequestBody Employee employee) {
-
-        return employeeService.updateById(id, employee);
+    public EmployeeDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
+        return employeesMapper.INSTANCE.toDto(employeeService.updateById(id, employeesMapper.INSTANCE.fromDto(employeeDto)));
     }
+
 
     //Удаление по id
     @PatchMapping("/users/{id}")
@@ -108,14 +108,15 @@ public class Controller {
 
     @GetMapping("/users/country")
     @ResponseStatus(HttpStatus.OK)
-    public Page<Employee> findByCountry(@RequestParam(required = false) String country,
+    public Page<EmployeeDto> findByCountry(@RequestParam(required = false) String country,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "3") int size,
                                         @RequestParam(defaultValue = "") List<String> sortList,
                                         @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder) {
         //Pageable paging = PageRequest.of(page, size);
         //Pageable paging = PageRequest.of(page, size, Sort.by("name").ascending());
-        return employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString());
+        return employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString())
+                .map(employee -> employeesMapper.INSTANCE.toDto(employee));
     }
 
     @GetMapping("/users/c")
@@ -138,23 +139,34 @@ public class Controller {
 
     @GetMapping("/users/countryBy")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getByCountry(@RequestParam(required = true) String country){
-        return employeeService.filterByCountry(country);
+    public List<EmployeeDto> getByCountry(@RequestParam(required = true) String country){
+       return employeeService.filterByCountry(country).stream()
+                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .collect(Collectors.toList());
     }
     @GetMapping("/users/countryByAddresses")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getByAddressesCity(@RequestParam( required = true) String city){
-        return employeeService.filterByAddressesCity(city);
+    public List<EmployeeDto> getByAddressesCity(@RequestParam( required = true) String city){
+        return employeeService.filterByAddressesCity(city)
+                .stream()
+                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .collect(Collectors.toList());
     }
     @GetMapping("/users/activeAddressByCountry")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getActiveAddressByCountry(@RequestParam(required = true) String country){
-        return employeeService.filterByActiveAndByCountry(country);
+    public List<EmployeeDto> getActiveAddressByCountry(@RequestParam(required = true) String country){
+        return employeeService.filterByActiveAndByCountry(country)
+                .stream()
+                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .collect(Collectors.toList());
     }
     @GetMapping("/users/privateNull")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getByPrivateIsNull(){
-        return employeeService.getPrivateIsNullAndChange();
+    public List<EmployeeDto> getByPrivateIsNull(){
+        return employeeService.getPrivateIsNullAndChange()
+                .stream()
+                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .collect(Collectors.toList());
     }
     //Сохранение в БД 1000 сущностей Employee
     @PatchMapping("/users/thousand")
