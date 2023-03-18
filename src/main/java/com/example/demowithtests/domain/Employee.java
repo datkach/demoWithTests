@@ -1,5 +1,7 @@
 package com.example.demowithtests.domain;
 
+import com.example.demowithtests.util.annotations.Country;
+import com.example.demowithtests.util.annotations.Name;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,9 @@ public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Name
     private String name;
+    @Country
     private String country;
     private String email;
     @OneToMany(cascade = CascadeType.ALL)

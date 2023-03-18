@@ -3,6 +3,8 @@ package com.example.demowithtests.service;
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
 import com.example.demowithtests.repository.EmployeeRepository;
+import com.example.demowithtests.util.annotations.ActivateMyAnnotations;
+import com.example.demowithtests.util.annotations.Name;
 import com.example.demowithtests.util.exception.ResourceNotFoundException;
 import com.example.demowithtests.util.exception.ResourcePrivateException;
 import com.example.demowithtests.util.exception.ResourceWasDeletedException;
@@ -29,6 +31,7 @@ public class EmployeeServiceBean implements EmployeeService {
     private final EmployeeRepository employeeRepository;
 
     @Override
+    @ActivateMyAnnotations(Name.class)
     public Employee create(Employee employee) {
         return employeeRepository.save(employee);
     }
@@ -80,6 +83,7 @@ public class EmployeeServiceBean implements EmployeeService {
     }
 
     @Override
+    @ActivateMyAnnotations(Name.class)
     public Employee updateById(Integer id, Employee employee) {
         return employeeRepository.findById(id)
                 .map(entity -> {
