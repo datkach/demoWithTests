@@ -1,8 +1,10 @@
 package com.example.demowithtests.web;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
+import com.example.demowithtests.dto.PhotoDto;
 import com.example.demowithtests.service.EmployeeService;
 import com.example.demowithtests.util.config.EmployeesMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -187,4 +190,32 @@ employeeService.updateAllEmployee();
     public void updateAllEmployeesPost(){
         employeeService.updateAllEmployee();
     }
+    //Получаем список Employee с прошедшим сроком
+    @GetMapping("/users/deprecatedPhoto")
+    @ResponseStatus(HttpStatus.OK)
+    public List<EmployeeReadDto> getEmployeeWithDeprecatedPhoto(){
+        log.info("getEmployeeWithDeprecatedPhoto() start");
+        System.err.println(employeeService.findDeprecatedPhoto());
+        return employeesMapper.INSTANCE.toListReadDto(employeeService.findDeprecatedPhoto());
+    }
+    //Обновляем Photo
+    @PutMapping("/users/{id}/refreshPhoto")
+    @ResponseStatus(HttpStatus.OK)
+    public PhotoDto refreshPhoto(@PathVariable("id") Integer id, @RequestBody PhotoDto photoDto) {
+        return employeesMapper.INSTANCE.photoToPhotoDto( employeeService.updatePhoto(id, photoDto) );
+    }
+    //Добавляем Photo
+    @PostMapping("users/{id}/addPhoto")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeDto addPhotoByEmployee(@PathVariable("id") Integer id, @RequestBody PhotoDto photoDto) {
+        return employeesMapper.INSTANCE.toDto(employeeService.newEmployeePhoto(id, employeesMapper.INSTANCE.photoDtoToPhoto(photoDto)));
+}
+    //получаем Employee с deprecatedPhoto и отсылаем Email
+@PatchMapping("users/sendEmails")
+    @ResponseStatus(HttpStatus.OK)
+    public Set<String> sendEmailByEmployeeWithDeprecatedPhoto(){
+        return employeeService.sendEmailByEmployee();
+}
+
+
 }

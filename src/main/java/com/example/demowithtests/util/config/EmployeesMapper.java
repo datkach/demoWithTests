@@ -1,8 +1,10 @@
 package com.example.demowithtests.util.config;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
+import com.example.demowithtests.dto.PhotoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -19,5 +21,6 @@ public interface EmployeesMapper {
     EmployeeReadDto toReadDto(Employee employee);
 
     List<EmployeeReadDto> toListReadDto(List<Employee> employees);
-
+    PhotoDto photoToPhotoDto(Photo photo);
+    Photo photoDtoToPhoto(PhotoDto photoDto);
 }

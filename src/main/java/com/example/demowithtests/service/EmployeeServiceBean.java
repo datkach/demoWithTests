@@ -2,9 +2,13 @@ package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
+import com.example.demowithtests.domain.Photo;
+import com.example.demowithtests.dto.PhotoDto;
 import com.example.demowithtests.repository.EmployeeRepository;
+import com.example.demowithtests.repository.PhotoRepository;
 import com.example.demowithtests.util.annotations.ActivateMyAnnotations;
 import com.example.demowithtests.util.annotations.Name;
+import com.example.demowithtests.util.exception.PhotoNotFoundException;
 import com.example.demowithtests.util.exception.ResourceNotFoundException;
 import com.example.demowithtests.util.exception.ResourcePrivateException;
 import com.example.demowithtests.util.exception.ResourceWasDeletedException;
@@ -17,11 +21,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Slf4j
@@ -29,6 +33,8 @@ import java.util.stream.Collectors;
 public class EmployeeServiceBean implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final PhotoRepository photoRepository;
+    private final EmailService emailService;
 
     @Override
     @ActivateMyAnnotations(Name.class)
@@ -239,4 +245,58 @@ public class EmployeeServiceBean implements EmployeeService {
         Long difference = System.currentTimeMillis() - currentTime;
         log.info("updateAllEmployee() time method - {} ",difference);
     }
+//Находим людей с устаревшими фото
+    @Override
+    public List<Employee> findDeprecatedPhoto() {
+        log.info("findDeprecatedPhoto() - start");
+        List<Employee> employees = employeeRepository.findAll();
+        List<Employee> employeeListDeprecated = new ArrayList<>();
+        for (Employee employee : employees) {
+            for (Photo photo : employee.getPhotos()) {
+                if (photo.getAddDate()
+                        .plusYears(5)
+                        .plusDays(7)
+                        .isBefore(LocalDateTime.now())) {
+                    employeeListDeprecated.add(employee);
+                }
+            }
+        }
+        return employeeListDeprecated;
+    }
+// обновляем фото
+    @Override
+    public Photo updatePhoto(Integer photoId, PhotoDto photoDto) {
+        Photo photo = photoRepository.findById(photoId).orElseThrow(() -> new PhotoNotFoundException());
+        if (photoDto.description != null) photo.setDescription(photoDto.description);
+        if (photoDto.cameraType != null) photo.setCameraType(photoDto.cameraType);
+        if (photoDto.photoUrl != null) photo.setPhotoUrl(photoDto.photoUrl);
+        if (photoDto.addDate != null) photo.setAddDate(LocalDateTime.now());
+        return photoRepository.save(photo);
+    }
+// добавляем новое фото к Employee
+    @Override
+    public Employee newEmployeePhoto(Integer employeeId, Photo photo) {
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(() -> new ResourceNotFoundException());
+        employee.getPhotos().add(photo);
+        return employeeRepository.save(employee);
+    }
+    //разсылка на email
+    @Override
+    public Set<String> sendEmailByEmployee() {
+        List<Employee> employee = findDeprecatedPhoto();
+        Set<String> mail = new HashSet<>();
+        if(employee.size() > 0){
+            for(Employee e : employee){
+                emailService.sendSimpleMessage(
+                        "9482159@stud.op.edu.ua",//e.getEmail();
+                        e.getName(),
+                       "Please update your photo"
+                );
+                mail.add(e.getEmail());
+            }
+        }
+        return mail;
+    }
+
+
 }

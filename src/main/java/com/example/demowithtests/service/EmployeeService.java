@@ -1,12 +1,14 @@
 package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.dto.EmployeeReadDto;
+import com.example.demowithtests.domain.Photo;
+import com.example.demowithtests.dto.PhotoDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface EmployeeService {
 
@@ -56,5 +58,11 @@ public interface EmployeeService {
     List<Employee> getPrivateIsNullAndChange();
     void createThousandPeople();
     void updateAllEmployee();
+    List<Employee> findDeprecatedPhoto();
+
+    Photo updatePhoto(Integer photoId, PhotoDto photoDto);
+
+    Employee newEmployeePhoto(Integer employeeId, Photo photo);
+    Set<String > sendEmailByEmployee();
 
 }
