@@ -2,6 +2,7 @@ package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Gender;
+import com.example.demowithtests.domain.Passport;
 import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.dto.PhotoDto;
 import com.example.demowithtests.repository.EmployeeRepository;
@@ -35,6 +36,7 @@ public class EmployeeServiceBean implements EmployeeService {
     private final EmployeeRepository employeeRepository;
     private final PhotoRepository photoRepository;
     private final EmailService emailService;
+    private final PassportService passportService;
 
     @Override
     @ActivateMyAnnotations(Name.class)
@@ -46,7 +48,7 @@ public class EmployeeServiceBean implements EmployeeService {
     public List<Employee> getAll() {
       /*  var employees = employeeRepository.findAll();
         for(Employee employee : employees){
-            if(employee.getPrivate())
+            if(employee.getIsPrivate())
                 employees.remove(employee);
         }*/
         return employeeRepository.findAll();
@@ -68,7 +70,7 @@ public class EmployeeServiceBean implements EmployeeService {
                 .orElseThrow(ResourceNotFoundException::new);
         getPrivateMethod(employee);
 
-        if(employee.getPrivate()==true){
+        if(employee.getIsPrivate()==true){
                 throw new ResourcePrivateException();
         }
         log.info("getById(Integer id) Service - end:   = employee {}", employee);
@@ -79,12 +81,12 @@ public class EmployeeServiceBean implements EmployeeService {
     }
     private void getPrivateMethod(Employee employee) {
         log.info("getPrivateById() Service - start: id = {}", employee.getId());
-        if(employee.getPrivate() == null)
+        if(employee.getIsPrivate() == null)
         {
-            employee.setPrivate(false);
+            employee.setIsPrivate(false);
             employeeRepository.save(employee);
         }
-        log.info("getPrivateById() Service - end: IsPrivate = {}", employee.getPrivate());
+        log.info("getPrivateById() Service - end: IsPrivate = {}", employee.getIsPrivate());
 
     }
 
@@ -204,7 +206,7 @@ public class EmployeeServiceBean implements EmployeeService {
     public List<Employee> getPrivateIsNullAndChange() {
         var employees = employeeRepository.queryEmployeeByIsPrivateIsNull();
         for(Employee employee : employees){
-            employee.setPrivate(Boolean.FALSE);
+            employee.setIsPrivate(Boolean.FALSE);
         }
         employeeRepository.saveAll(employees);
         return employeeRepository.queryEmployeeByIsPrivateIsNull();
@@ -221,13 +223,13 @@ public class EmployeeServiceBean implements EmployeeService {
             employee.setGender(Gender.M);
             employee.setCountry("Ukraine");
             employee.setEmail("dmytro" + i + "@gmail.com");
-            employee.setPrivate(Boolean.FALSE);
+            employee.setIsPrivate(Boolean.FALSE);
         }else{
                 employee.setName("Kris");
                 employee.setCountry("Spain");
                 employee.setEmail("kris" + i + "@gmail.com");
                 employee.setGender(Gender.F);
-                employee.setPrivate(Boolean.FALSE);
+                employee.setIsPrivate(Boolean.FALSE);
             }
             employees.add(employee);
         }
@@ -298,5 +300,13 @@ public class EmployeeServiceBean implements EmployeeService {
         return mail;
     }
 
-
+    @Override
+    public Employee addPassportToEmployee(Integer passportId, Integer employeeId) {
+        Passport passport =  passportService.getById(passportId);
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(()-> new ResourceNotFoundException());
+        employee.setPassport(passport);
+        employeeRepository.save(employee);
+        return employee;
+    }
 }

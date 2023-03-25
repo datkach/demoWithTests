@@ -1,6 +1,7 @@
 package com.example.demowithtests.dto;
 
 import com.example.demowithtests.domain.Gender;
+import com.example.demowithtests.domain.Passport;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.validation.constraints.Email;
@@ -32,4 +33,5 @@ public class EmployeeReadDto {
     public Date date = Date.from(Instant.now());
 
     public Gender gender;
+    public Passport passport;
 }

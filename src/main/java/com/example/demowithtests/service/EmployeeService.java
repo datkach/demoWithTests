@@ -1,6 +1,7 @@
 package com.example.demowithtests.service;
 
 import com.example.demowithtests.domain.Employee;
+import com.example.demowithtests.domain.Passport;
 import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.dto.PhotoDto;
 import org.springframework.data.domain.Page;
@@ -64,5 +65,6 @@ public interface EmployeeService {
 
     Employee newEmployeePhoto(Integer employeeId, Photo photo);
     Set<String > sendEmailByEmployee();
+    Employee addPassportToEmployee(Integer passportId, Integer employeeId);
 
 }

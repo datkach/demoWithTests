@@ -1,7 +1,5 @@
 package com.example.demowithtests.web;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.PhotoDto;
@@ -32,7 +30,7 @@ import java.util.stream.Collectors;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 @Slf4j
 @Tag(name = "Employee", description = "Employee API")
-public class Controller {
+public class EmployeeControllerBean implements EmployeeControllerSwagger{
 
     private final EmployeeService employeeService;
     private final EmployeesMapper employeesMapper;
@@ -46,10 +44,10 @@ public class Controller {
             @ApiResponse(responseCode = "400", description = "Invalid input"),
             @ApiResponse(responseCode = "404", description = "NOT FOUND. Specified employee request not found."),
             @ApiResponse(responseCode = "409", description = "Employee already exists")})
-    public EmployeeDto saveEmployee(@RequestBody @Valid EmployeeDto requestForSave) {
+    public EmployeeReadDto saveEmployee(@RequestBody @Valid EmployeeDto requestForSave) {
 
         var employee = employeesMapper.INSTANCE.fromDto(requestForSave);
-        var dto = employeesMapper.toDto(employeeService.create(employee));
+        var dto = employeesMapper.toReadDto(employeeService.create(employee));
 
         return dto;
     }
@@ -90,8 +88,8 @@ public class Controller {
     //Обновление юзера
     @PutMapping("/users/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public EmployeeDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
-        return employeesMapper.INSTANCE.toDto(employeeService.updateById(id, employeesMapper.INSTANCE.fromDto(employeeDto)));
+    public EmployeeReadDto refreshEmployee(@PathVariable("id") Integer id, @RequestBody EmployeeDto employeeDto) {
+        return employeesMapper.INSTANCE.toReadDto(employeeService.updateById(id, employeesMapper.INSTANCE.fromDto(employeeDto)));
     }
 
 
@@ -111,15 +109,13 @@ public class Controller {
 
     @GetMapping("/users/country")
     @ResponseStatus(HttpStatus.OK)
-    public Page<EmployeeDto> findByCountry(@RequestParam(required = false) String country,
+    public List<EmployeeReadDto> findByCountry(@RequestParam(required = false) String country,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "3") int size,
                                         @RequestParam(defaultValue = "") List<String> sortList,
                                         @RequestParam(defaultValue = "DESC") Sort.Direction sortOrder) {
-        //Pageable paging = PageRequest.of(page, size);
-        //Pageable paging = PageRequest.of(page, size, Sort.by("name").ascending());
-        return employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString())
-                .map(employee -> employeesMapper.INSTANCE.toDto(employee));
+        return employeesMapper.INSTANCE.toListReadDto(
+                employeeService.findByCountryContaining(country, page, size, sortList, sortOrder.toString()).toList());
     }
 
     @GetMapping("/users/c")
@@ -142,33 +138,33 @@ public class Controller {
 
     @GetMapping("/users/countryBy")
     @ResponseStatus(HttpStatus.OK)
-    public List<EmployeeDto> getByCountry(@RequestParam(required = true) String country){
+    public List<EmployeeReadDto> getByCountry(@RequestParam(required = true) String country){
        return employeeService.filterByCountry(country).stream()
-                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .map(employee -> employeesMapper.INSTANCE.toReadDto(employee))
                 .collect(Collectors.toList());
     }
     @GetMapping("/users/countryByAddresses")
     @ResponseStatus(HttpStatus.OK)
-    public List<EmployeeDto> getByAddressesCity(@RequestParam( required = true) String city){
+    public List<EmployeeReadDto> getByAddressesCity(@RequestParam( required = true) String city){
         return employeeService.filterByAddressesCity(city)
                 .stream()
-                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .map(employee -> employeesMapper.INSTANCE.toReadDto(employee))
                 .collect(Collectors.toList());
     }
     @GetMapping("/users/activeAddressByCountry")
     @ResponseStatus(HttpStatus.OK)
-    public List<EmployeeDto> getActiveAddressByCountry(@RequestParam(required = true) String country){
+    public List<EmployeeReadDto> getActiveAddressByCountry(@RequestParam(required = true) String country){
         return employeeService.filterByActiveAndByCountry(country)
                 .stream()
-                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .map(employee -> employeesMapper.INSTANCE.toReadDto(employee))
                 .collect(Collectors.toList());
     }
     @GetMapping("/users/privateNull")
     @ResponseStatus(HttpStatus.OK)
-    public List<EmployeeDto> getByPrivateIsNull(){
+    public List<EmployeeReadDto> getByPrivateIsNull(){
         return employeeService.getPrivateIsNullAndChange()
                 .stream()
-                .map(employee -> employeesMapper.INSTANCE.toDto(employee))
+                .map(employee -> employeesMapper.INSTANCE.toReadDto(employee))
                 .collect(Collectors.toList());
     }
     //Сохранение в БД 1000 сущностей Employee
@@ -207,8 +203,8 @@ employeeService.updateAllEmployee();
     //Добавляем Photo
     @PostMapping("users/{id}/addPhoto")
     @ResponseStatus(HttpStatus.OK)
-    public EmployeeDto addPhotoByEmployee(@PathVariable("id") Integer id, @RequestBody PhotoDto photoDto) {
-        return employeesMapper.INSTANCE.toDto(employeeService.newEmployeePhoto(id, employeesMapper.INSTANCE.photoDtoToPhoto(photoDto)));
+    public EmployeeReadDto addPhotoByEmployee(@PathVariable("id") Integer id, @RequestBody PhotoDto photoDto) {
+        return employeesMapper.INSTANCE.toReadDto(employeeService.newEmployeePhoto(id, employeesMapper.INSTANCE.photoDtoToPhoto(photoDto)));
 }
     //получаем Employee с deprecatedPhoto и отсылаем Email
 @PatchMapping("users/sendEmails")
@@ -217,5 +213,11 @@ employeeService.updateAllEmployee();
         return employeeService.sendEmailByEmployee();
 }
 
-
+    @PatchMapping("users/{uid}/passports/{pid}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeReadDto addPassport(@PathVariable("uid") Integer employeeId,
+                                       @PathVariable("pid") Integer passportId){
+        return EmployeesMapper.INSTANCE.toReadDto(employeeService
+                .addPassportToEmployee(passportId,employeeId));
+    }
 }
