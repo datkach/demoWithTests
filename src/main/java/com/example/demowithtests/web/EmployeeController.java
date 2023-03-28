@@ -1,5 +1,6 @@
 package com.example.demowithtests.web;
 
+import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Photo;
 import com.example.demowithtests.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -85,4 +86,5 @@ public interface EmployeeController {
     //получаем Employee с deprecatedPhoto и отсылаем Email
 
     Set<String> sendEmailByEmployeeWithDeprecatedPhoto();
+    void uploadPhoto(MultipartFile file, Integer photoId) throws IOException;
 }

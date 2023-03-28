@@ -23,9 +23,18 @@ public class Photo {
     private String description;
     private String cameraType;
     private String photoUrl;
+    private byte[] image;
 
     public Integer getId() {
         return id;
+    }
+
+    public byte[] getImage() {
+        return image;
+    }
+
+    public void setImage(byte[] image) {
+        this.image = image;
     }
 
     public void setId(Integer id) {
