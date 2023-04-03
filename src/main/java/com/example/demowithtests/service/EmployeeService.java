@@ -66,5 +66,5 @@ public interface EmployeeService {
     Employee newEmployeePhoto(Integer employeeId, Photo photo);
     Set<String > sendEmailByEmployee();
     Employee addPassportToEmployee(Integer passportId, Integer employeeId);
-
+Employee addFreePassportToEmployee(Integer employeeId);
 }

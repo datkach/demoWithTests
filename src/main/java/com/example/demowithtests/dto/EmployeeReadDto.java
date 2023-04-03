@@ -33,5 +33,5 @@ public class EmployeeReadDto {
     public Date date = Date.from(Instant.now());
 
     public Gender gender;
-    public Passport passport;
+    public PassportResponseDto passport;
 }

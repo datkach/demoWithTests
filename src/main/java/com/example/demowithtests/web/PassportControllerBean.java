@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @AllArgsConstructor
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -50,5 +52,29 @@ public class PassportControllerBean implements PassportController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removePassportById(@PathVariable Integer id) {
         passportService.removeById(id);
+    }
+//Получаем паспорта без привязки к Employee
+
+    @Override
+    @GetMapping("passports/allFree")
+    @ResponseStatus(HttpStatus.OK)
+    public List<PassportResponseDto> getAllFreePassports() {
+        return PassportMapper.INSTANCE.toListDto(passportService.getFreePassport());
+    }
+//Генерация 100 пустых паспортов
+
+    @Override
+    @PatchMapping("/passport/hundred")
+    @ResponseStatus(HttpStatus.OK)
+    public void getHundredPassports() {
+       passportService.generateHundredPassport();
+    }
+//Получаем первый свободный паспорт без привязки к Employee.Если такого нет создаётся новый паспорт
+
+    @Override
+    @GetMapping("passports/firstFree")
+    @ResponseStatus(HttpStatus.OK)
+    public PassportResponseDto getFirstFreePassports() {
+        return PassportMapper.INSTANCE.toDto(passportService.getFirstFreePassport());
     }
 }

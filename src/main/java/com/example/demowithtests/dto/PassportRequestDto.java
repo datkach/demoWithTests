@@ -14,5 +14,6 @@ public class PassportRequestDto {
     public String secondName;
     public LocalDateTime dateOfBirthday;
     public LocalDateTime expireDate;
+    public String serialNumber;
 
 }

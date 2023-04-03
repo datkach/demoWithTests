@@ -8,10 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -146,4 +143,12 @@ public interface EmployeeControllerSwagger extends EmployeeController {
     @Operation(summary = "This endpoint sends email to all employees with deprecated photos", description = "sends email to those, whose photo is expired", tags = {"Employee"})
     @ApiResponses(value = @ApiResponse(responseCode = "200", description = "OK."))
     Set<String> sendEmailByEmployeeWithDeprecatedPhoto();
+    @Override
+    @Operation(summary = "This endpoint add PassPort to  employee by Passport Id and Employee Id", description = "add PassPort to  employee", tags = {"Employee"})
+    @ApiResponses(value = @ApiResponse(responseCode = "200", description = "OK."))
+     EmployeeReadDto addPassport(Integer employeeId, Integer passportId);
+    @Override
+    @Operation(summary = "This endpoint add first free PassPort to employee by Employee Id", description = "add PassPort to  employee", tags = {"Employee"})
+    @ApiResponses(value = @ApiResponse(responseCode = "200", description = "OK."))
+     EmployeeReadDto addNewPassport(Integer employeeId);
 }

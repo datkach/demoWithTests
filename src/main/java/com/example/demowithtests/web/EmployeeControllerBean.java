@@ -213,13 +213,7 @@ public class EmployeeControllerBean implements EmployeeControllerSwagger {
     }
 
 
-    @PatchMapping("users/{uid}/passports/{pid}")
-    @ResponseStatus(HttpStatus.OK)
-    public EmployeeReadDto addPassport(@PathVariable("uid") Integer employeeId,
-                                       @PathVariable("pid") Integer passportId) {
-        return EmployeesMapper.INSTANCE.toReadDto(employeeService
-                .addPassportToEmployee(passportId, employeeId));
-    }
+
 // Upload photo by ID
     @PostMapping("/users/photo/{photoId}")
     @ResponseStatus(HttpStatus.OK)
@@ -232,5 +226,21 @@ public class EmployeeControllerBean implements EmployeeControllerSwagger {
     @ResponseStatus(HttpStatus.OK)
     public byte[] getPhotoImage(@PathVariable Integer photoId) {
         return photoService.getPhoto(photoId);
+    }
+    //Добавляем определенно выбранный Passport к Employee
+    @PatchMapping("users/{uid}/passports/{pid}")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeReadDto addPassport(@PathVariable("uid") Integer employeeId,
+                                       @PathVariable("pid") Integer passportId) {
+        return EmployeesMapper.INSTANCE.toReadDto(employeeService
+                .addPassportToEmployee(passportId, employeeId));
+    }
+    //Добавляем свободный Passport к Employee
+
+    @PatchMapping("users/{uid}/passports")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeReadDto addNewPassport(@PathVariable("uid") Integer employeeId) {
+        return EmployeesMapper.INSTANCE.toReadDto(employeeService
+                .addFreePassportToEmployee(employeeId));
     }
 }

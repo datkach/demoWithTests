@@ -1,19 +1,12 @@
 package com.example.demowithtests.web;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Photo;
-import com.example.demowithtests.dto.*;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.example.demowithtests.dto.EmployeeDto;
+import com.example.demowithtests.dto.EmployeeReadDto;
+import com.example.demowithtests.dto.PhotoDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -87,4 +80,6 @@ public interface EmployeeController {
 
     Set<String> sendEmailByEmployeeWithDeprecatedPhoto();
     void uploadPhoto(MultipartFile file, Integer photoId) throws IOException;
+    EmployeeReadDto addNewPassport(Integer employeeId);
+    EmployeeReadDto addPassport( Integer employeeId, Integer passportId);
 }

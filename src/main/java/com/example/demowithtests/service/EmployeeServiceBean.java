@@ -9,10 +9,7 @@ import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.repository.PhotoRepository;
 import com.example.demowithtests.util.annotations.ActivateMyAnnotations;
 import com.example.demowithtests.util.annotations.Name;
-import com.example.demowithtests.util.exception.PhotoNotFoundException;
-import com.example.demowithtests.util.exception.ResourceNotFoundException;
-import com.example.demowithtests.util.exception.ResourcePrivateException;
-import com.example.demowithtests.util.exception.ResourceWasDeletedException;
+import com.example.demowithtests.util.exception.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -299,12 +296,34 @@ public class EmployeeServiceBean implements EmployeeService {
         }
         return mail;
     }
-
+//Добавление конкретного паспорта(по id) к Employee
     @Override
     public Employee addPassportToEmployee(Integer passportId, Integer employeeId) {
+        log.info("addPassportToEmployee() - start");
         Passport passport =  passportService.getById(passportId);
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(()-> new ResourceNotFoundException());
+                .orElseThrow(ResourceNotFoundException::new) ;
+        if(passport.getEmployee()==null)
+            return getEmployee(passport, employee);
+        log.info("addPassportToEmployee() - end: employee - {}",employee);
+        return null;
+    }
+// Добавляем уже созданный паспорт к Employee
+    @Override
+    public Employee addFreePassportToEmployee(Integer employeeId) {
+        log.info("addFreePassportToEmployee() - start");
+        Passport passport = passportService.getFirstFreePassport();
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(ResourceNotFoundException::new) ;
+        log.info("addFreePassportToEmployee() - end: employee - {}",employee);
+        return getEmployee(passport, employee);
+    }
+// Метод для Оформление данных в добавленном к Employee паспорте
+    private Employee getEmployee(Passport passport, Employee employee) {
+        passport.setFirstName(employee.getName());
+        passport.setSecondName(employee.getName());
+        passport.setExpireDate(LocalDateTime.now().plusYears(5));
+        passport.setEmployee(employee);
         employee.setPassport(passport);
         employeeRepository.save(employee);
         return employee;
