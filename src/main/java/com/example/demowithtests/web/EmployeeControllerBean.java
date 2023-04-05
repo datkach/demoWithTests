@@ -243,4 +243,19 @@ public class EmployeeControllerBean implements EmployeeControllerSwagger {
         return EmployeesMapper.INSTANCE.toReadDto(employeeService
                 .addFreePassportToEmployee(employeeId));
     }
+    @GetMapping("users/{id}/lostPassport")
+    @ResponseStatus(HttpStatus.OK)
+    public String changedPassportStatusByLost(@PathVariable("id") Integer employeeId){
+        return employeeService.changeStatusByLost(employeeId);
+    }
+    @GetMapping("users/{id}/expiredPassport")
+    @ResponseStatus(HttpStatus.OK)
+    public String changedPassportStatusByExpired(@PathVariable("id") Integer employeeId){
+        return employeeService.changeStatusByExpired(employeeId);
+    }
+    @GetMapping("users/{id}/changePassport")
+    @ResponseStatus(HttpStatus.OK)
+    public EmployeeReadDto changedPassport(@PathVariable("id") Integer employeeId){
+        return  EmployeesMapper.INSTANCE.toReadDto(employeeService.getNewPassport(employeeId));
+    }
 }

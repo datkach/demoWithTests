@@ -24,5 +24,17 @@ public class Passport {
     private LocalDateTime expireDate;
     @OneToOne(mappedBy = "passport")
     private Employee employee;
-
+    @Enumerated(EnumType.STRING)
+    private PassportState currentState;
+    @OneToOne
+    @JoinColumn(name = "previous_id", referencedColumnName = "id")
+    private Passport previous;
+    private Boolean isFree = Boolean.TRUE;
+    public enum PassportState {
+        NEW,
+        ACTIVE,
+        LOST,
+        EXPIRED,
+        CHANGED_FORMAT
+    }
 }

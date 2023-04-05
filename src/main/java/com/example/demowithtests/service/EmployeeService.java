@@ -67,4 +67,9 @@ public interface EmployeeService {
     Set<String > sendEmailByEmployee();
     Employee addPassportToEmployee(Integer passportId, Integer employeeId);
 Employee addFreePassportToEmployee(Integer employeeId);
+    String changeStatusByLost(Integer employeeId);
+
+    String changeStatusByExpired(Integer employeeId);
+
+    Employee getNewPassport(Integer employeeId);
 }

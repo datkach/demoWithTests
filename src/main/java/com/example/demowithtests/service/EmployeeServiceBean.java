@@ -1,9 +1,6 @@
 package com.example.demowithtests.service;
 
-import com.example.demowithtests.domain.Employee;
-import com.example.demowithtests.domain.Gender;
-import com.example.demowithtests.domain.Passport;
-import com.example.demowithtests.domain.Photo;
+import com.example.demowithtests.domain.*;
 import com.example.demowithtests.dto.PhotoDto;
 import com.example.demowithtests.repository.EmployeeRepository;
 import com.example.demowithtests.repository.PhotoRepository;
@@ -19,11 +16,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @AllArgsConstructor
 @Slf4j
@@ -303,10 +298,12 @@ public class EmployeeServiceBean implements EmployeeService {
         Passport passport =  passportService.getById(passportId);
         Employee employee = employeeRepository.findById(employeeId)
                 .orElseThrow(ResourceNotFoundException::new) ;
-        if(passport.getEmployee()==null)
-            return getEmployee(passport, employee);
+        if(passport.getIsFree()){
+            employee.setPassport(passportService.getFilledPassport(passport,employee));
+        employeeRepository.save(employee);
+        }
         log.info("addPassportToEmployee() - end: employee - {}",employee);
-        return null;
+        return employee;
     }
 // Добавляем уже созданный паспорт к Employee
     @Override
@@ -314,18 +311,74 @@ public class EmployeeServiceBean implements EmployeeService {
         log.info("addFreePassportToEmployee() - start");
         Passport passport = passportService.getFirstFreePassport();
         Employee employee = employeeRepository.findById(employeeId)
-                .orElseThrow(ResourceNotFoundException::new) ;
-        log.info("addFreePassportToEmployee() - end: employee - {}",employee);
-        return getEmployee(passport, employee);
-    }
-// Метод для Оформление данных в добавленном к Employee паспорте
-    private Employee getEmployee(Passport passport, Employee employee) {
-        passport.setFirstName(employee.getName());
-        passport.setSecondName(employee.getName());
-        passport.setExpireDate(LocalDateTime.now().plusYears(5));
-        passport.setEmployee(employee);
-        employee.setPassport(passport);
+                .orElseThrow(ResourceNotFoundException::new);
+        employee.setPassport(passportService.getFilledPassport(passport,employee));
         employeeRepository.save(employee);
+        log.info("addFreePassportToEmployee() - end: employee - {}",employee);
+        return employee;
+    }
+// Метод для Оформления данных в добавленном к Employee паспорте
+//    private Employee getFilledEmployee(Passport passport, Employee employee) {
+//        passport.setFirstName(employee.getName());
+//        passport.setSecondName(employee.getName());
+//        passport.setExpireDate(LocalDateTime.now().plusYears(5));
+//        passport.setIsFree(Boolean.FALSE);
+//        passport.setCurrentState(PassportState.ACTIVE);
+//        passport.setEmployee(employee);
+//        employee.setPassport(passport);
+//        employeeRepository.save(employee);
+//        return employee;
+//    }
+
+    //Паспорт был утерян
+    @Override
+    public String changeStatusByLost(Integer employeeId){
+        log.info("changeStatusByLost() - start");
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(ResourceNotFoundException::new);
+        Passport passport = employee.getPassport();
+        if(passport.getCurrentState()
+                .equals(Passport.PassportState.ACTIVE))
+        {
+            passport.setCurrentState(Passport.PassportState.LOST);
+            employeeRepository.save(employee);
+            return "Successfully changed";
+        }
+        log.info("changeStatusByLost() - end: employee -{}", employee);
+
+        return "No changes passed";
+    }
+    //Паспорт был просрочен
+    @Override
+    public String changeStatusByExpired(Integer employeeId){
+        log.info("changeStatusByExpired() - start");
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(ResourceNotFoundException::new);
+        Passport passport = employee.getPassport();
+            if(passport.getExpireDate().isBefore(LocalDateTime.now()))
+        {
+            passport.setCurrentState(Passport.PassportState.EXPIRED);
+            employeeRepository.save(employee);
+            return "Successfully changed";
+        }
+        log.info("changeStatusByExpired() - end: employee -{}", employee);
+        return "No changes passed";
+    }
+    //Получаем новый паспорт с уже существующим
+    public Employee getNewPassport(Integer employeeId){
+        log.info("getNewPassport() - start");
+        Employee employee = employeeRepository.findById(employeeId).orElseThrow(ResourceNotFoundException::new);
+        Passport passport = employee.getPassport();
+        if(passport.getCurrentState().equals(Passport.PassportState.LOST)
+                || passport.getCurrentState().equals(Passport.PassportState.EXPIRED))
+        {
+            passportService.removeById(passport.getId());
+             employee =  addFreePassportToEmployee(employeeId);
+            employee.getPassport().setPrevious(passport);
+            employee.getPassport().setCurrentState(Passport.PassportState.ACTIVE);
+            employeeRepository.save(employee);
+        }
+        log.info("getNewPassport() - end: employee -{}", employee);
         return employee;
     }
 }

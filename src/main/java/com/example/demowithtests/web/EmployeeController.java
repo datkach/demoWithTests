@@ -5,6 +5,7 @@ import com.example.demowithtests.dto.EmployeeReadDto;
 import com.example.demowithtests.dto.PhotoDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -82,4 +83,5 @@ public interface EmployeeController {
     void uploadPhoto(MultipartFile file, Integer photoId) throws IOException;
     EmployeeReadDto addNewPassport(Integer employeeId);
     EmployeeReadDto addPassport( Integer employeeId, Integer passportId);
+    String changedPassportStatusByExpired( Integer employeeId);
 }

@@ -1,8 +1,6 @@
 package com.example.demowithtests.util.config;
 
-import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Passport;
-import com.example.demowithtests.dto.EmployeeDto;
 import com.example.demowithtests.dto.PassportRequestDto;
 import com.example.demowithtests.dto.PassportResponseDto;
 import org.mapstruct.Mapper;
@@ -12,10 +10,10 @@ import java.util.List;
 
 @Mapper
 public interface PassportMapper {
-   PassportMapper INSTANCE = Mappers.getMapper(PassportMapper.class);
+    PassportMapper INSTANCE = Mappers.getMapper(PassportMapper.class);
 
     Passport fromDto(PassportRequestDto dto);
 
-    PassportResponseDto toDto(Passport passport);
+    PassportResponseDto toDto(Passport passport1);
     List<PassportResponseDto> toListDto(List<Passport> passports);
 }

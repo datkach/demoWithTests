@@ -1,17 +1,15 @@
 package com.example.demowithtests.dto;
 
-import com.example.demowithtests.domain.Employee;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.example.demowithtests.domain.Passport;
 
 import java.time.LocalDateTime;
 
 public class PassportResponseDto {
+    public Passport.PassportState passportState;
     public String firstName;
     public String secondName;
     public LocalDateTime dateOfBirthday;
     public LocalDateTime expireDate;
-
     public String serialNumber;
-
 
 }

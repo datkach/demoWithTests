@@ -30,6 +30,7 @@ public class EmployeeReadDto {
 
     //todo: dfhgjkdfhg Jira - 5544
     public List<PhotoReadDto> photos;
+
     public Date date = Date.from(Instant.now());
 
     public Gender gender;

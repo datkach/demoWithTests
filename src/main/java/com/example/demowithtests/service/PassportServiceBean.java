@@ -1,5 +1,6 @@
 package com.example.demowithtests.service;
 
+import com.example.demowithtests.domain.Employee;
 import com.example.demowithtests.domain.Passport;
 import com.example.demowithtests.repository.PassportRepository;
 import com.example.demowithtests.util.exception.PassportIsTakenException;
@@ -8,7 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -18,15 +19,11 @@ import java.util.stream.Collectors;
 @Service
 public class PassportServiceBean implements PassportService{
     private final PassportRepository passportRepository;
-//    @Transactional
-//    @PostConstruct
-//    public void init() {
-//
-//    }
-    @Override
+@Override
     public Passport create(Passport passport) {
         log.info("create() - start");
         passport.setSerialNumber(String.valueOf(UUID.randomUUID()));
+        passport.setIsFree(Boolean.TRUE);
         log.info("create() - end: passport - {}",passport.getSerialNumber());
         return passportRepository.save(passport);
     }
@@ -34,7 +31,9 @@ public class PassportServiceBean implements PassportService{
     @Override
     public void removeById(Integer id) {
         log.info("removeById() - start");
-        passportRepository.deleteById(id);
+        Passport passport = passportRepository.findById(id).orElseThrow(ResourceNotFoundException::new);
+       if(passport.getCurrentState().equals(Passport.PassportState.ACTIVE))
+           passport.setCurrentState(Passport.PassportState.CHANGED_FORMAT);
         log.info("removeById() - end");
     }
 
@@ -48,6 +47,7 @@ public class PassportServiceBean implements PassportService{
                     passport.setDateOfBirthday(plane.getDateOfBirthday());
                     passport.setExpireDate(plane.getExpireDate());
                     passport.setSerialNumber(plane.getSerialNumber());
+                    passport.setCurrentState(Passport.PassportState.ACTIVE);
                     return passportRepository.save(passport);
                 })
                 .orElseThrow(PassportIsTakenException::new);
@@ -62,7 +62,7 @@ public class PassportServiceBean implements PassportService{
     public List<Passport> getFreePassport() {
        return passportRepository.findAll()
                .stream()
-               .filter(s ->s.getEmployee()==null)
+               .filter(s ->s.getIsFree()==Boolean.TRUE)
                .collect(Collectors.toList());
     }
 //Генерация 100 пустых паспортов
@@ -77,9 +77,19 @@ public class PassportServiceBean implements PassportService{
 //Получаем первый свободный паспорт без привязки к Employee.Если такого нет создаётся новый паспорт
     @Override
     public Passport getFirstFreePassport() {
-        List<Passport> passports = getFreePassport();
-        if (passports.isEmpty())
-    return create(new Passport());
-    return passports.stream().findFirst().get();
+    return getFreePassport().stream().findFirst().orElse(create(new Passport()));
+    }
+    @Override
+    public Passport getFilledPassport(Passport passport, Employee employee){
+    log.info("getFilledPassport() - start");
+        passport.setFirstName(employee.getName());
+        passport.setSecondName(employee.getName());
+        passport.setExpireDate(LocalDateTime.now().plusYears(5));
+        passport.setIsFree(Boolean.FALSE);
+        passport.setCurrentState(Passport.PassportState.ACTIVE);
+        passport.setEmployee(employee);
+        passportRepository.save(passport);
+        log.info("getFilledPassport() - end: passport - {},employee - {}", passport,employee);
+        return passport;
     }
 }

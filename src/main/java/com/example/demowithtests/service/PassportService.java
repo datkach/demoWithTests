@@ -14,4 +14,5 @@ public interface PassportService {
     void generateHundredPassport();
     Passport getFirstFreePassport();
 
+    Passport getFilledPassport(Passport passport, Employee employee);
 }
