@@ -29,6 +29,7 @@ public class EmployeeServiceBean implements EmployeeService {
     private final PhotoRepository photoRepository;
     private final EmailService emailService;
     private final PassportService passportService;
+    private final CabinetService cabinetService;
 
     @Override
     @ActivateMyAnnotations(Name.class)
@@ -380,5 +381,26 @@ public class EmployeeServiceBean implements EmployeeService {
         }
         log.info("getNewPassport() - end: employee -{}", employee);
         return employee;
+    }
+    @Override
+    public Employee addEmployeeToCabinet(Integer employeeId, Integer cabinetId) {
+        var employee = employeeRepository.findById(employeeId)
+                .orElseThrow(ResourceNotFoundException::new);
+        var cabinet = cabinetService.getCabinet(cabinetId);
+
+        employee.getCabinets().add(cabinet);
+
+        return employeeRepository.save(employee);
+    }
+
+    @Override
+    public void removeEmployeeFromCabinet(Integer employeeId, Integer cabinetId) {
+        var employee = employeeRepository.findById(employeeId)
+                .orElseThrow(ResourceNotFoundException::new);
+        var cabinet = cabinetService.getCabinet(cabinetId);
+
+        employee.getCabinets().remove(cabinet);
+
+        employeeRepository.save(employee);
     }
 }

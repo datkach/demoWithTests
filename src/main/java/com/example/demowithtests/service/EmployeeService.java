@@ -72,4 +72,8 @@ Employee addFreePassportToEmployee(Integer employeeId);
     String changeStatusByExpired(Integer employeeId);
 
     Employee getNewPassport(Integer employeeId);
+    Employee addEmployeeToCabinet(Integer employeeId, Integer cabinetId);
+
+    void removeEmployeeFromCabinet(Integer employeeId, Integer cabinetId);
+
 }

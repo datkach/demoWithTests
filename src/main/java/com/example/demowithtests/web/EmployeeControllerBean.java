@@ -258,4 +258,17 @@ public class EmployeeControllerBean implements EmployeeControllerSwagger {
     public EmployeeReadDto changedPassport(@PathVariable("id") Integer employeeId){
         return  EmployeesMapper.INSTANCE.toReadDto(employeeService.getNewPassport(employeeId));
     }
+    @PostMapping("/users/{e_id}/cabinets/{c_id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public EmployeeReadDto addEmployeeToCabinet(@PathVariable("e_id") Integer employeeId,
+                                                @PathVariable("c_id") Integer cabinetId) {
+        return EmployeesMapper.INSTANCE.toReadDto(employeeService.addEmployeeToCabinet(employeeId, cabinetId));
+    }
+
+    @DeleteMapping("/users/{e_id}/cabinets/{c_id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeEmployeeFromCabinet(@PathVariable("e_id") Integer employeeId,
+                                          @PathVariable("c_id") Integer cabinetId) {
+        employeeService.removeEmployeeFromCabinet(employeeId, cabinetId);
+    }
 }
