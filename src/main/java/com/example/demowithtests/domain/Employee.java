@@ -38,7 +38,6 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     private Boolean isPrivate = Boolean.FALSE;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @ToString.Exclude
-    private Set<Cabinet> cabinets = new HashSet<>();
+    @OneToMany(mappedBy = "employee")
+    private Set<EmployeesCabinetTable> employeesCabinets = new HashSet<>();
 }

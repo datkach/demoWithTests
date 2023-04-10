@@ -24,8 +24,7 @@ public class Cabinet {
     private String name;
     private Integer capacity = 1;
     private Boolean isDeleted = Boolean.FALSE;
-    @ManyToMany(mappedBy = "cabinets", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private Set<Employee> employees = new HashSet<>();
+    @OneToMany(mappedBy = "cabinet")
+    private Set<EmployeesCabinetTable> employeesCabinets = new HashSet<>();
 
 }

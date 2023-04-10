@@ -30,6 +30,7 @@ public class EmployeeServiceBean implements EmployeeService {
     private final EmailService emailService;
     private final PassportService passportService;
     private final CabinetService cabinetService;
+    private final EmployeeCabinetService employeeCabinetService;
 
     @Override
     @ActivateMyAnnotations(Name.class)
@@ -388,8 +389,7 @@ public class EmployeeServiceBean implements EmployeeService {
                 .orElseThrow(ResourceNotFoundException::new);
         var cabinet = cabinetService.getCabinet(cabinetId);
 
-        employee.getCabinets().add(cabinet);
-
+employeeCabinetService.addRelation(employee,cabinet);
         return employeeRepository.save(employee);
     }
 
@@ -399,8 +399,7 @@ public class EmployeeServiceBean implements EmployeeService {
                 .orElseThrow(ResourceNotFoundException::new);
         var cabinet = cabinetService.getCabinet(cabinetId);
 
-        employee.getCabinets().remove(cabinet);
-
+        employeeCabinetService.deleteRelation(employeeId,cabinetId);
         employeeRepository.save(employee);
     }
 }
