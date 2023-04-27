@@ -1,0 +1,36 @@
+version: "3"
+
+volumes:
+  postgres_volume:
+
+services:
+  postgres:
+    image: "postgres:15"
+    container_name: "postgres"
+
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=root"
+      - "POSTGRES_DB=employee"
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: "pg_isready -U postgres"
+      interval: 1m
+      timeout: 10s
+      retries: 5
+
+  app:
+    image: "dmyttkach/demo-with-tests"
+    container_name: "demo-with-tests-container"
+    ports:
+      - "8080:8087"
+    links:
+      - postgres:db
+    healthcheck:
+      test: "curl --fail http://localhost:8087 || exit 1"
+      interval: 1m
+      timeout: 10s
+      retries: 5
